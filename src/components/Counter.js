@@ -1,32 +1,29 @@
 import React from "react";
 import { connect } from "react-redux";
 
-const increment = id => ({
-  type: "INC",
-  id
-});
-const decrement = id => ({
-  type: "DEC",
-  id
-});
-
-const initCounter = id => ({
-  type: "INIT",
-  id
-});
+import { increment, decrement, initCounter, reset } from "../ducks";
 
 class Counter extends React.Component {
   componentDidMount() {
-    console.log("dans componentDidMount", this.props.id);
-    this.props.initCounter(this.props.id);
+    this.props.initCounter(
+      this.props.id,
+      this.props.defaultValue ? this.props.defaultValue : 0
+    );
   }
 
   render() {
-    const { id, count, decrement, increment } = this.props;
+    const { id, count, defaultValue, decrement, increment, reset } = this.props;
 
     return (
       <div>
-        <h2>Compteur</h2>
+        <h2>
+          Compteur{" "}
+          <span style={{ fontSize: 14 }}>
+            <button onClick={() => reset(id, defaultValue ? defaultValue : 0)}>
+              reset
+            </button>
+          </span>
+        </h2>
         <button onClick={() => decrement(id)}>-</button>
         <span style={{ margin: "0 10px" }}>{count}</span>
         <button onClick={() => increment(id)}>+</button>
@@ -36,18 +33,18 @@ class Counter extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  console.log("dans mapStateToProps de counter");
-  console.log("state", state);
   let subState = state.counters.filter(elt => elt.id === ownProps.id);
 
-  return subState.length === 1 ? subState[0] : {};
+  //return subState.length === 1 ? subState[0] : {};
+  return subState[0];
 };
 
 // auto wrap with dispatch
 const mapDispatchToProp = {
   increment,
   decrement,
-  initCounter
+  initCounter,
+  reset
 };
 
 export default connect(
